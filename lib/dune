@@ -1,0 +1,3 @@
+(library
+ (name dunedb)
+ (libraries str unix))

@@ -1,0 +1,4 @@
+(executable
+ (public_name dunedb)
+ (name main)
+ (libraries dunedb))

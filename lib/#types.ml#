@@ -1,0 +1,52 @@
+(*type defs for schema declerations*)
+type value =
+  | Null
+  | Bool of bool
+  | Int of int64
+  | Float of float
+  | String of string
+  | Binary of bytes
+  | ObjectId of string
+  | Array of value list
+  | Document of (string * value) list
+  | Timestamp of int64
+
+(*type ordering. 0 is the lowest*)
+let type_order = function
+  | Null      -> 0
+  | Bool _    -> 1
+  | Int _     -> 2
+  | Float _   -> 3
+  | String _  -> 4
+  | Binary _  -> 5
+  | ObjectId _ -> 6
+  | Array _   -> 7
+  | Document _ -> 8
+  | Timestamp _ -> 9
+
+type document = (string * value) list
+
+let rec compare_value a b =
+  match a , b with
+  |Null , Null -> 0
+  |Bool x , Bool y -> Bool.compare x y
+  |Int x , Int y -> Int64.compare x y
+  |Float x , Float y -> Float.compare x y
+  |String x , String y -> String.compare x y
+  |Array x , Array y -> List.compare compare_value x y
+  |Document x , Document y ->
+    List.compare (fun (k1,v1) (k2,v2) -> 
+          let key_cmp = String.compare k1 k2 in
+          if key_cmp <> 0 then key_cmp
+          else compare_value v1 v2
+      ) x y
+  |a , b -> Int.compare (type_order a) (type_order b)
+  | Binary x, Binary y   -> Bytes.compare x y
+  | ObjectId x, ObjectId y -> String.compare x y
+  | Timestamp x, Timestamp y -> Int64.compare x y
+end
+
+let equal_value a b ->
+    
+                  
+   
