@@ -10,6 +10,8 @@ type value =
   | Array of value list
   | Document of (string * value) list
   | Timestamp of int64
+  | NodeId of int64
+  | EdgeId of int64
 
 (*type ordering. 0 is the lowest*)
 let type_order = function
@@ -44,9 +46,41 @@ let rec compare_value a b =
   | Binary x, Binary y   -> Bytes.compare x y
   | ObjectId x, ObjectId y -> String.compare x y
   | Timestamp x, Timestamp y -> Int64.compare x y
+  |NodeId x , NodeId y -> Int64.compare x y
+  |EdgeId x , EdgeId y -> Int64.compare x y 
 end
 
-let equal_value a b ->
-    
-                  
-   
+let equal_value a b =
+  match compare_value a b with
+  |0 -> true
+  |_ -> false
+end
+
+let rec pp_value fmt v =
+  match v with
+  | Null      -> Format.fprintf fmt "null"
+  | Bool b    -> Format.fprintf fmt "%b" b
+  | Int i     -> Format.fprintf fmt "%Ld" i    (* %Ld is the int64 format specifier *)
+  | Float f   -> Format.fprintf fmt "%g" f
+  | String s  -> Format.fprintf fmt "%S" s     (* %S adds the quotes around it *)
+  | Array vs  -> 
+      Format.fprintf fmt "[";
+      Format.pp_print_list
+        ~pp_sep:(fun fmt () -> Format.fprintf fmt ", ")
+        pp_value fmt vs;
+     Format.fprintf fmt "]"
+  | Document fields ->
+    Format.fprintf fmt "{ ";
+    Format.pp_print_list
+      ~pp_sep:(fun fmt () -> Format.fprintf fmt ", ")
+      (fun fmt (k, v) ->
+        Format.fprintf fmt "%s: %a" k pp_value v)
+      fmt fields;
+    Format.fprintf fmt " }"
+  |Timestamp t -> Format.fprintf fmt "%Ld" t
+  |NodeId n -> Format.fprintf fmt "%Ld" n
+  |EdgeId e -> Format.fprintf fmt "%Ld" e
+end
+
+let pp_document fmt doc =
+  pp_value fmt (Document    

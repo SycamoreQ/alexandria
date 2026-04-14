@@ -1,4 +1,4 @@
 (lang dune 3.22)
 (name dunedb)
-(sections (lib .) (bin ../../bin))
-(files (lib (META dune-package opam)) (bin (dunedb)))
+(sections (lib .) (bin ../../bin) (doc ../../doc/dunedb))
+(files (lib (META dune-package opam)) (bin (dunedb)) (doc (LICENSE)))

@@ -1,3 +1,4 @@
 (library
  (name dunedb)
+ (wrapped false) 
  (libraries str unix))

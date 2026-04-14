@@ -6,3 +6,6 @@ lib: [
 bin: [
   "_build/install/default/bin/dunedb"
 ]
+doc: [
+  "_build/install/default/doc/dunedb/LICENSE"
+]

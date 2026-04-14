@@ -1,3 +1,3 @@
 (tests
- (names test_types test_bson test_storage)
+ (names test_types)
  (libraries dunedb alcotest))

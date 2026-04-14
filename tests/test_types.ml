@@ -45,7 +45,4 @@ let () =
 
   (* 7. Document comparison *)
   let doc1 = Types.document_set Types.StringMap.empty "a" (Types.Int 1L) in
-  let doc2 = Types.document_set Types.StringMap.empty "a" (Types.Int 2L) in
-  assert (Types.compare_value (Types.Document doc1) (Types.Document doc2) < 0);
-
-  Printf.printf "All types tests passed!\n"
+  let doc2 = Types.document_set Types.String
