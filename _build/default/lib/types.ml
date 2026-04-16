@@ -63,7 +63,7 @@ let rec pp_value fmt v =
   | Int i     -> Format.fprintf fmt "%Ld" i    (* %Ld is the int64 format specifier *)
   | Float f   -> Format.fprintf fmt "%g" f
   | String s  -> Format.fprintf fmt "%S" s     (* %S adds the quotes around it *)
-  | Array vs  -> 
+  | Array vs  ->
       Format.fprintf fmt "[";
       Format.pp_print_list
         ~pp_sep:(fun fmt () -> Format.fprintf fmt ", ")
@@ -93,7 +93,7 @@ let document_get doc key =
 
 let document_set doc key value =
   StringMap.add key value doc
-  
+
 let is_null v =
   match v with
   |Null -> true

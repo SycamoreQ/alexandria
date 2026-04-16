@@ -1,9 +1,9 @@
 (library
  (name dunedb)
  (wrapped false)
- (libraries str unix ocaml-protoc-plugin))
+ (libraries str unix pbrt))
 
 (rule
-  (targets schema.ml schema.mli)
-  (deps lib/schema.proto)
-  (action (run ocaml-protoc --ml_out lib/%{deps})))
+ (targets schema.ml schema.mli)
+ (deps schema.proto)
+ (action (run ocaml-protoc --ml_out ./ %{deps})))

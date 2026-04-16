@@ -75,7 +75,7 @@ let rec pp_value fmt v =
     StringMap.iter (fun k v ->
       if !first then first := false
       else Format.fprintf fmt ", ";
-      Format.fprintf fmt "%s: %a" k pp_value vr
+      Format.fprintf fmt "%s: %a" k pp_value v
     ) fields;
     Format.fprintf fmt " }"
   |Timestamp t -> Format.fprintf fmt "%Ld" t
