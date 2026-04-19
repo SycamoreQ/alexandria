@@ -1,1 +1,1 @@
-lib/types.mli: Format Map
+lib/types.mli: Base Map Stdlib String

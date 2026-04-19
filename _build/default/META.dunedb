@@ -1,0 +1,6 @@
+description = ""
+requires = "base pbrt stdio str unix"
+archive(byte) = "dunedb.cma"
+archive(native) = "dunedb.cmxa"
+plugin(byte) = "dunedb.cma"
+plugin(native) = "dunedb.cmxs"

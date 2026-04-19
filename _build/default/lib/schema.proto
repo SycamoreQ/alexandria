@@ -1,0 +1,177 @@
+syntax = "proto3";
+
+package dunedb;
+
+// ─────────────────────────────────────────
+// CORE VALUE TYPE
+// ─────────────────────────────────────────
+
+message Value {
+  oneof kind {
+    bool     null_value    = 1;
+    bool     bool_value    = 2;
+    int64    int_value     = 3;
+    double   float_value   = 4;
+    string   string_value  = 5;
+    bytes    binary_value  = 6;
+    string   object_id     = 7;
+    Array    array_value   = 8;
+    Document doc_value     = 9;
+    int64    timestamp     = 10;
+    int64    node_id       = 11;
+    int64    edge_id       = 12;
+  }
+}
+
+message Array {
+  repeated Value values = 1;
+}
+
+message Document {
+  map<string, Value> fields = 1;
+}
+
+// ─────────────────────────────────────────
+// LABEL SYSTEM (nodes + edges share this)
+// ─────────────────────────────────────────
+
+message Label {
+  string            name        = 1;   // e.g "Person", "KNOWS"
+  repeated string   parents     = 2;   // label hierarchy — inherits from these
+  Document          properties  = 3;   // metadata on the label itself
+}
+
+// ─────────────────────────────────────────
+// WEIGHT SYSTEM
+// ─────────────────────────────────────────
+
+message Weight {
+  string name  = 1;   // dimension name e.g "distance", "cost", "time"
+  double value = 2;
+}
+
+// ─────────────────────────────────────────
+// VERSION HISTORY
+// ─────────────────────────────────────────
+
+message Version {
+  int64  version_id        = 1;   // monotonically increasing
+  int64  created_at        = 2;   // unix timestamp millis
+  int64  updated_at        = 3;
+  string updated_by        = 4;   // future auth hook
+  Document delta           = 5;   // what changed in this version
+}
+
+// ─────────────────────────────────────────
+// NODE
+// ─────────────────────────────────────────
+
+message Node {
+  // Identity
+  int64           id          = 1;   // internal int64 id
+  string          alias       = 2;   // user defined string key e.g "user:alice"
+
+  // Labels
+  repeated Label  labels      = 3;
+
+  // Properties
+  Document        properties  = 4;
+
+  // Timestamps
+  int64           created_at  = 5;
+  int64           updated_at  = 6;
+
+  // Versioning
+  int64           version     = 7;
+  repeated Version history    = 8;
+
+  // Tombstone
+  bool            is_deleted  = 9;
+  int64           deleted_at  = 10;
+
+  // Graph membership
+  repeated string graph_names = 11;  // which named graphs this node belongs to
+}
+
+// ─────────────────────────────────────────
+// EDGE
+// ─────────────────────────────────────────
+
+enum EdgeDirection {
+  DIRECTED   = 0;
+  UNDIRECTED = 1;
+}
+
+message Edge {
+  // Identity
+  int64           id          = 1;
+  string          alias       = 2;
+
+  // Endpoints
+  int64           source      = 3;
+  int64           target      = 4;
+  EdgeDirection   direction   = 5;
+
+  // Labels — multiple rich labels
+  repeated Label  labels      = 6;
+
+  // Weights — multiple named dimensions
+  repeated Weight weights     = 7;
+
+  // Properties
+  Document        properties  = 8;
+
+  // Timestamps
+  int64           created_at  = 9;
+  int64           updated_at  = 10;
+
+  // Versioning
+  int64           version     = 11;
+  repeated Version history    = 12;
+
+  // Tombstone
+  bool            is_deleted  = 13;
+  int64           deleted_at  = 14;
+
+  // Graph membership
+  repeated string graph_names = 15;
+}
+
+// ─────────────────────────────────────────
+// NAMED GRAPH
+// ─────────────────────────────────────────
+
+message Graph {
+  // Identity
+  string          name        = 1;   // unique name
+  string          description = 2;
+
+  // Properties
+  Document        properties  = 3;
+
+  // Timestamps
+  int64           created_at  = 4;
+  int64           updated_at  = 5;
+
+  // Tombstone
+  bool            is_deleted  = 6;
+  int64           deleted_at  = 7;
+
+  // Stats — maintained by storage layer
+  int64           node_count  = 8;
+  int64           edge_count  = 9;
+}
+
+// ─────────────────────────────────────────
+// DATABASE METADATA (stored in page 0)
+// ─────────────────────────────────────────
+
+message DatabaseMeta {
+  string          name           = 1;
+  string          version        = 2;   // dunedb version string
+  int64           created_at     = 3;
+  int64           page_size      = 4;
+  int64           page_count     = 5;
+  repeated string graph_names    = 6;   // all named graphs
+  int64           schema_version = 7;   // for migrations later
+}

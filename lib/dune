@@ -1,7 +1,9 @@
 (library
  (name dunedb)
+ (public_name dunedb)
  (wrapped false)
- (libraries str unix pbrt))
+ (modules types schema codec)
+ (libraries str unix pbrt base stdio))
 
 (rule
  (targets schema.ml schema.mli)

@@ -1,51 +1,55 @@
+open Base
+open Dunedb
+module T = Types
+
 let () =
   (* 1. compare_value ordering *)
-  assert (Types.compare_value Types.Null (Types.Bool true) < 0);
-  assert (Types.compare_value (Types.Int 1L) (Types.Int 2L) < 0);
-  assert (Types.compare_value (Types.Int 5L) (Types.Int 5L) = 0);
-  assert (Types.compare_value (Types.String "a") (Types.String "b") < 0);
-  assert (Types.compare_value (Types.Float 1.0) (Types.Float 2.0) < 0);
-  assert (Types.compare_value Types.Null (Types.Int 1L) < 0);
-  assert (Types.compare_value (Types.Int 1L) Types.Null > 0);
+  assert (Dunedb.Types.compare_value Dunedb.Types.Null (Dunedb.Types.Bool true) < 0);
+  assert (Dunedb.Types.compare_value (Dunedb.Types.Int 1L) (Dunedb.Types.Int 2L) < 0);
+  assert (Dunedb.Types.compare_value (Dunedb.Types.Int 5L) (Dunedb.Types.Int 5L) = 0);
+  assert (Dunedb.Types.compare_value (Dunedb.Types.String "a") (Dunedb.Types.String "b") < 0);
+  assert (Dunedb.Types.compare_value (Dunedb.Types.Float 1.0) (Dunedb.Types.Float 2.0) < 0);
+  assert (Dunedb.Types.compare_value Dunedb.Types.Null (Dunedb.Types.Int 1L) < 0);
+  assert (Dunedb.Types.compare_value (Dunedb.Types.Int 1L) Dunedb.Types.Null > 0);
 
   (* 2. equal_value *)
-  assert (Types.equal_value Types.Null Types.Null = true);
-  assert (Types.equal_value (Types.Int 1L) (Types.Int 2L) = false);
-  assert (Types.equal_value (Types.String "hi") (Types.String "hi") = true);
-  assert (Types.equal_value (Types.Bool true) (Types.Bool false) = false);
+  assert (Dunedb.Types.equal_value Dunedb.Types.Null Dunedb.Types.Null = true);
+  assert (Dunedb.Types.equal_value (Dunedb.Types.Int 1L) (Dunedb.Types.Int 2L) = false);
+  assert (Dunedb.Types.equal_value (Dunedb.Types.String "hi") (Dunedb.Types.String "hi") = true);
+  assert (Dunedb.Types.equal_value (Dunedb.Types.Bool true) (Dunedb.Types.Bool false) = false);
 
   (* 3. document_get / document_set *)
-  let d = Types.StringMap.empty in
-  let d = Types.document_set d "x" (Types.Int 1L) in
-  assert (Types.document_get d "x" = Some (Types.Int 1L));
-  assert (Types.document_get d "y" = None);
-  let d = Types.document_set d "x" (Types.Int 99L) in
-  assert (Types.document_get d "x" = Some (Types.Int 99L));
-  let d = Types.document_set d "z" (Types.Bool true) in
-  assert (Types.document_get d "z" = Some (Types.Bool true));
+  let d = Dunedb.Types.StringMap.empty in
+  let d = Dunedb.Types.document_set d "x" (Dunedb.Types.Int 1L) in
+  assert (Dunedb.Types.document_get d "x" = Some (Dunedb.Types.Int 1L));
+  assert (Dunedb.Types.document_get d "y" = None);
+  let d = Dunedb.Types.document_set d "x" (Dunedb.Types.Int 99L) in
+  assert (Dunedb.Types.document_get d "x" = Some (Dunedb.Types.Int 99L));
+  let d = Dunedb.Types.document_set d "z" (Dunedb.Types.Bool true) in
+  assert (Dunedb.Types.document_get d "z" = Some (Dunedb.Types.Bool true));
 
   (* 4. type_name *)
-  assert (Types.type_name Types.Null = "null");
-  assert (Types.type_name (Types.Bool true) = "bool");
-  assert (Types.type_name (Types.Int 1L) = "int");
-  assert (Types.type_name (Types.Array []) = "array");
-  assert (Types.type_name (Types.Document Types.StringMap.empty) = "document");
-  assert (Types.type_name (Types.NodeId 1L) = "nodeid");
-  assert (Types.type_name (Types.EdgeId 1L) = "edgeid");
+  assert (Dunedb.Types.type_name Dunedb.Types.Null = "null");
+  assert (Dunedb.Types.type_name (Dunedb.Types.Bool true) = "bool");
+  assert (Dunedb.Types.type_name (Dunedb.Types.Int 1L) = "int");
+  assert (Dunedb.Types.type_name (Dunedb.Types.Array []) = "array");
+  assert (Dunedb.Types.type_name (Dunedb.Types.Document Dunedb.Types.StringMap.empty) = "document");
+  assert (Dunedb.Types.type_name (Dunedb.Types.NodeId 1L) = "nodeid");
+  assert (Dunedb.Types.type_name (Dunedb.Types.EdgeId 1L) = "edgeid");
 
   (* 5. is_null *)
-  assert (Types.is_null Types.Null = true);
-  assert (Types.is_null (Types.Bool false) = false);
-  assert (Types.is_null (Types.Int 0L) = false);
+  assert (Dunedb.Types.is_null Dunedb.Types.Null = true);
+  assert (Dunedb.Types.is_null (Dunedb.Types.Bool false) = false);
+  assert (Dunedb.Types.is_null (Dunedb.Types.Int 0L) = false);
 
   (* 6. Array comparison *)
-  let a1 = Types.Array [Types.Int 1L; Types.Int 2L] in
-  let a2 = Types.Array [Types.Int 1L; Types.Int 3L] in
-  assert (Types.compare_value a1 a2 < 0);
+  let a1 = Dunedb.Types.Array [Dunedb.Types.Int 1L; Dunedb.Types.Int 2L] in
+  let a2 = Dunedb.Types.Array [Dunedb.Types.Int 1L; Dunedb.Types.Int 3L] in
+  assert (Dunedb.Types.compare_value a1 a2 < 0);
 
   (* 7. Document comparison *)
-  let doc1 = Types.document_set Types.StringMap.empty "a" (Types.Int 1L) in
-  let doc2 = Types.document_set Types.StringMap.empty "a" (Types.Int 2L) in
-  assert (Types.compare_value (Types.Document doc1) (Types.Document doc2) < 0);
+  let doc1 = Dunedb.Types.document_set Dunedb.Types.StringMap.empty "a" (Dunedb.Types.Int 1L) in
+  let doc2 = Dunedb.Types.document_set Dunedb.Types.StringMap.empty "a" (Dunedb.Types.Int 2L) in
+  assert (Dunedb.Types.compare_value (Dunedb.Types.Document doc1) (Dunedb.Types.Document doc2) < 0);
 
-  Printf.printf "All types tests passed!\n"
+  Stdio.printf "All types tests passed!\n"

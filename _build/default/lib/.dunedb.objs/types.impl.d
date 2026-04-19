@@ -1,1 +1,1 @@
-lib/types.ml: Bool Bytes Float Format Int Int64 List Map String
+lib/types.ml: Base Bool Bytes Float Int Int64 List Map Stdlib String

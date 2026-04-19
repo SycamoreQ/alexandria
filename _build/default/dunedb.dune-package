@@ -1,4 +1,54 @@
 (lang dune 3.22)
 (name dunedb)
-(sections (lib .) (bin ../../bin) (doc ../../doc/dunedb))
-(files (lib (META dune-package opam)) (bin (dunedb)) (doc (LICENSE)))
+(sections (lib .) (libexec .) (bin ../../bin) (doc ../../doc/dunedb))
+(files
+ (lib
+  (META
+   codec.cmi
+   codec.cmt
+   codec.cmti
+   codec.cmx
+   codec.ml
+   codec.mli
+   dune-package
+   dunedb.a
+   dunedb.cma
+   dunedb.cmxa
+   opam
+   schema.cmi
+   schema.cmt
+   schema.cmti
+   schema.cmx
+   schema.ml
+   schema.mli
+   types.cmi
+   types.cmt
+   types.cmti
+   types.cmx
+   types.ml
+   types.mli))
+ (libexec (dunedb.cmxs))
+ (bin (dunedb))
+ (doc (LICENSE)))
+(library
+ (name dunedb)
+ (kind normal)
+ (archives (byte dunedb.cma) (native dunedb.cmxa))
+ (plugins (byte dunedb.cma) (native dunedb.cmxs))
+ (native_archives dunedb.a)
+ (requires str unix pbrt base stdio)
+ (modes byte native)
+ (modules
+  (unwrapped
+   (module
+    (obj_name codec)
+    (visibility public)
+    (source (path Codec) (intf (path codec.mli)) (impl (path codec.ml))))
+   (module
+    (obj_name schema)
+    (visibility public)
+    (source (path Schema) (intf (path schema.mli)) (impl (path schema.ml))))
+   (module
+    (obj_name types)
+    (visibility public)
+    (source (path Types) (intf (path types.mli)) (impl (path types.ml)))))))
